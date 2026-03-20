@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { User } from './types'
 import { UserList } from './components/UserList'
 
@@ -9,12 +9,18 @@ function App() {
   const [showColors, setShowColors] = useState(false)
   const [sortByCountry, setSortByCountry] = useState(false)
 
+  const originalUsers = useRef<User[]>([])
+
   const toggleColors = () => {
     setShowColors(!showColors)
   }
 
   const toggleSortByCountry = () => {
     setSortByCountry((prevState) => !prevState)
+  }
+
+  const handleReset = () => {
+    setUsers(originalUsers.current)
   }
 
   const handleDelete = (email: string) => {
@@ -25,7 +31,10 @@ function App() {
   useEffect(() => {
     fetch('https://randomuser.me/api/?results=100')
       .then((response) => response.json())
-      .then((data) => setUsers(data.results))
+      .then((data) => {
+        setUsers(data.results)
+        originalUsers.current = data.results
+      })
       .catch((error) => console.log(error))
   }, [])
 
@@ -51,6 +60,7 @@ function App() {
         <button onClick={toggleSortByCountry}>
           {sortByCountry ? 'Do not sort by country' : 'Sort by country'}
         </button>
+        <button onClick={handleReset}>Reset Users</button>
       </header>
 
       <main>
