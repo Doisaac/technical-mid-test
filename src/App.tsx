@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
 import type { User } from './types'
 import { UserList } from './components/UserList'
 
@@ -8,6 +9,7 @@ function App() {
   const [users, setUsers] = useState<User[]>([])
   const [showColors, setShowColors] = useState(false)
   const [sortByCountry, setSortByCountry] = useState(false)
+  const [filteredCountry, setFilteredCountry] = useState<string | null>(null)
 
   const originalUsers = useRef<User[]>([])
 
@@ -38,11 +40,23 @@ function App() {
       .catch((error) => console.log(error))
   }, [])
 
-  const sortedUsers = sortByCountry
-    ? users.toSorted((a, b) => {
-        return a.location.country.localeCompare(b.location.country)
-      })
-    : users
+  const filteredUsers = useMemo(() => {
+    return filteredCountry != null && filteredCountry.length > 0
+      ? users.filter((user) => {
+          return user.location.country
+            .toLocaleLowerCase()
+            .includes(filteredCountry.toLowerCase())
+        })
+      : users
+  }, [filteredCountry, users])
+
+  const sortedUsers = useMemo(() => {
+    return sortByCountry
+      ? filteredUsers.toSorted((a, b) =>
+          a.location.country.localeCompare(b.location.country),
+        )
+      : filteredUsers
+  }, [filteredUsers, sortByCountry])
 
   return (
     <>
@@ -61,6 +75,12 @@ function App() {
           {sortByCountry ? 'Do not sort by country' : 'Sort by country'}
         </button>
         <button onClick={handleReset}>Reset Users</button>
+        <input
+          placeholder="Filter by country"
+          onChange={(e) => {
+            setFilteredCountry(e.target.value)
+          }}
+        />
       </header>
 
       <main>
