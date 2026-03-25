@@ -13,4 +13,4 @@ Here are the steps to follow:
 - [X] Handle any potential errors that may occur.
 - [X] Implement a feature that allows the user to filter the data by country.
 - [X] Avoid sorting users again the data when the user is changing filter by country.
-- [] Sort by clicking on the column header.
+- [X] Sort by clicking on the column header.
