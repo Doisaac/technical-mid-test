@@ -80,6 +80,16 @@ export interface Name {
 
 export type Title = 'Ms' | 'Madame' | 'Miss' | 'Monsieur' | 'Mr' | 'Mrs'
 
+export const SORT_BY = {
+  NONE: 'none',
+  NAME: 'name',
+  LAST: 'last',
+  COUNTRY: 'country',
+} as const
+
+export type SortBy = (typeof SORT_BY)[keyof typeof SORT_BY]
+export type SortableField = Exclude<SortBy, 'none'>
+
 export interface Picture {
   large: string
   medium: string

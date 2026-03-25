@@ -12,3 +12,7 @@
 .table--showColors tr:nth-child(2n + 1) {
   background-color: #555;
 }
+
+.pointer {
+  cursor: pointer;
+}
