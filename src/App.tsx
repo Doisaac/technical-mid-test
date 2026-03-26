@@ -161,7 +161,9 @@ function App() {
         </UsersState>
 
         {!loading && !error && (
-          <button onClick={() => setCurrentPage((prev) => prev + 1)}>+1</button>
+          <button onClick={() => setCurrentPage((prev) => prev + 1)}>
+            Load more users
+          </button>
         )}
       </main>
     </>
