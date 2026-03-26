@@ -12,11 +12,26 @@ interface Props {
   children: React.ReactNode
 }
 function UsersState({ loading, error, isEmpty, children }: Props) {
-  if (loading) return <strong>Loading...</strong>
-  if (error) return <p>An error has occurred</p>
-  if (isEmpty) return <p>There are no users</p>
+  // Initial State
+  if (isEmpty) {
+    if (loading) return <strong>Loading...</strong>
+    if (error) return <p>An error has occurred</p>
 
-  return <>{children}</>
+    return <p>There are no users</p>
+  }
+
+  // There is data already
+  return (
+    <>
+      {children}
+
+      {/* loading incremental */}
+      {loading && <p>Loading more...</p>}
+
+      {/* error incremental */}
+      {error && <p>Something went wrong loading more data</p>}
+    </>
+  )
 }
 
 function App() {
@@ -24,6 +39,7 @@ function App() {
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>('none')
   const [filteredCountry, setFilteredCountry] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
@@ -56,20 +72,25 @@ function App() {
     setLoading(true)
     setError(false)
 
-    fetch('https://randomuser.me/api/?results=10')
+    fetch(
+      `https://randomuser.me/api/?results=10&seed=doisaac&page=${currentPage}`,
+    )
       .then((response) => {
         if (!response.ok) throw new Error('error forzado')
         return response.json()
       })
       .then((data) => {
-        setUsers(data.results)
-        originalUsers.current = data.results
+        setUsers((prevUsers) => {
+          const newUsers = prevUsers.concat(data.results)
+          originalUsers.current = newUsers
+          return newUsers
+        })
       })
       .catch((error) => setError(error))
       .finally(() => {
         setLoading(false)
       })
-  }, [])
+  }, [currentPage])
 
   const filteredUsers = useMemo(() => {
     return filteredCountry != null && filteredCountry.length > 0
@@ -138,6 +159,10 @@ function App() {
             users={sortedUsers}
           />
         </UsersState>
+
+        {!loading && !error && (
+          <button onClick={() => setCurrentPage((prev) => prev + 1)}>+1</button>
+        )}
       </main>
     </>
   )
