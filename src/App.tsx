@@ -5,11 +5,28 @@ import { UserList } from './components/UserList'
 
 import './App.css'
 
+interface Props {
+  loading: boolean
+  error: boolean
+  isEmpty: boolean
+  children: React.ReactNode
+}
+function UsersState({ loading, error, isEmpty, children }: Props) {
+  if (loading) return <strong>Loading...</strong>
+  if (error) return <p>An error has occurred</p>
+  if (isEmpty) return <p>There are no users</p>
+
+  return <>{children}</>
+}
+
 function App() {
   const [users, setUsers] = useState<User[]>([])
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>('none')
   const [filteredCountry, setFilteredCountry] = useState<string | null>(null)
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   const originalUsers = useRef<User[]>([])
 
@@ -36,13 +53,22 @@ function App() {
   }
 
   useEffect(() => {
-    fetch('https://randomuser.me/api/?results=100')
-      .then((response) => response.json())
+    setLoading(true)
+    setError(false)
+
+    fetch('https://randomuser.me/api/?results=10')
+      .then((response) => {
+        if (!response.ok) throw new Error('error forzado')
+        return response.json()
+      })
       .then((data) => {
         setUsers(data.results)
         originalUsers.current = data.results
       })
-      .catch((error) => console.log(error))
+      .catch((error) => setError(error))
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
   const filteredUsers = useMemo(() => {
@@ -100,12 +126,18 @@ function App() {
       </header>
 
       <main>
-        <UserList
-          changeSorting={handleChangeSort}
-          deleteUser={handleDelete}
-          showColors={showColors}
-          users={sortedUsers}
-        />
+        <UsersState
+          loading={loading}
+          error={error}
+          isEmpty={users.length === 0}
+        >
+          <UserList
+            changeSorting={handleChangeSort}
+            deleteUser={handleDelete}
+            showColors={showColors}
+            users={sortedUsers}
+          />
+        </UsersState>
       </main>
     </>
   )
