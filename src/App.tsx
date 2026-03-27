@@ -5,6 +5,17 @@ import { UserList } from './components/UserList'
 
 import './App.css'
 
+const fetchUsers = async (currentPage: number) => {
+  return await fetch(
+    `https://randomuser.me/api/?results=10&seed=doisaac&page=${currentPage}`,
+  )
+    .then((response) => {
+      if (!response.ok) throw new Error('error forzado')
+      return response.json()
+    })
+    .then((data) => data.results)
+}
+
 interface Props {
   loading: boolean
   error: boolean
@@ -72,16 +83,10 @@ function App() {
     setLoading(true)
     setError(false)
 
-    fetch(
-      `https://randomuser.me/api/?results=10&seed=doisaac&page=${currentPage}`,
-    )
-      .then((response) => {
-        if (!response.ok) throw new Error('error forzado')
-        return response.json()
-      })
-      .then((data) => {
+    fetchUsers(currentPage)
+      .then((users) => {
         setUsers((prevUsers) => {
-          const newUsers = prevUsers.concat(data.results)
+          const newUsers = prevUsers.concat(users)
           originalUsers.current = newUsers
           return newUsers
         })
