@@ -10,7 +10,6 @@ interface Props {
 export const UserList = ({
   changeSorting,
   showColors,
-  // deleteUser,
   users,
 }: Props) => {
   return (

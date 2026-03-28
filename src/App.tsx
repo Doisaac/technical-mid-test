@@ -28,11 +28,6 @@ function App() {
     void refetch()
   }
 
-  // const handleDelete = (email: string) => {
-  //   const filteredUsers = users.filter((user: User) => user.email !== email)
-  //   setUsers(filteredUsers)
-  // }
-
   const handleChangeSort = (sort: SortBy) => {
     setSorting(sort)
   }
@@ -99,7 +94,6 @@ function App() {
         >
           <UserList
             changeSorting={handleChangeSort}
-            // deleteUser={handleDelete}
             showColors={showColors}
             users={sortedUsers}
           />
