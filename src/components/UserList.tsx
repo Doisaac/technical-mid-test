@@ -2,7 +2,7 @@ import type { SortBy, User } from '../types'
 
 interface Props {
   changeSorting: (sort: SortBy) => void
-  deleteUser: (index: string) => void
+  deleteUser?: (index: string) => void
   showColors: boolean
   users: User[]
 }
@@ -10,7 +10,7 @@ interface Props {
 export const UserList = ({
   changeSorting,
   showColors,
-  deleteUser,
+  // deleteUser,
   users,
 }: Props) => {
   return (
@@ -42,7 +42,7 @@ export const UserList = ({
               <td>{user.name.last}</td>
               <td>{user.location.country}</td>
               <td>
-                <button onClick={() => deleteUser(user.email)}>Borrar</button>
+                <button>Borrar</button>
               </td>
             </tr>
           )
